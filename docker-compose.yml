@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  azurecloudhub:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: azurecloudhub-app
+    ports:
+      - "8000:8000"
+    environment:
+      - AZURE_REGION=centralindia
+      - AZURE_ENVIRONMENT=Production (Azure App Service)
+      - PORT=8000
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
