@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AzureCloudHub - AI Model Serving & AZ-900 Suite</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-slate-950 text-slate-100 flex flex-col min-h-screen">
+
+  <!-- Top Azure Header Bar -->
+  <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-4">
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-lg bg-blue-600 flex items-center justify-center text-white text-xl shadow-lg shadow-blue-500/30">
+          <i class="fa-brands fa-microsoft"></i>
+        </div>
+        <div>
+          <div class="flex items-center space-x-2">
+            <h1 class="text-lg font-bold tracking-tight text-white">AzureCloudHub</h1>
+            <span class="px-2 py-0.5 text-xs font-semibold rounded badge-azure">PaaS Microservice</span>
+          </div>
+          <p class="text-xs text-slate-400">AI Model-Serving & AZ-900 Cloud Mastery Suite</p>
+        </div>
+      </div>
+
+      <!-- Candidate Badge -->
+      <div class="flex items-center space-x-4 text-xs">
+        <div class="hidden sm:flex flex-col text-right">
+          <span class="font-semibold text-slate-200">Dev Sehgal (UID: 24BAI70484)</span>
+          <span class="text-blue-400 font-medium">AZ-900 Certified: 971 / 1000 • CSE (AI & ML)</span>
+        </div>
+        <div class="w-9 h-9 rounded-full bg-gradient-to-tr from-blue-600 to-cyan-400 flex items-center justify-center text-white font-bold text-sm shadow">
+          DS
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Cloud Status Bar -->
+  <section class="bg-slate-900 border-b border-slate-800 px-4 py-2">
+    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between text-xs text-slate-400 gap-3">
+      <div class="flex items-center space-x-4">
+        <span class="flex items-center space-x-1.5">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span>Region: <strong class="text-slate-200" id="status-region">Central India</strong></span>
+        </span>
+        <span class="hidden md:inline">|</span>
+        <span>Environment: <strong class="text-slate-200">Azure App Service (Linux)</strong></span>
+        <span class="hidden md:inline">|</span>
+        <span>Redundancy: <strong class="text-slate-200">Zone-Redundant (ZRS)</strong></span>
+      </div>
+      <div class="flex items-center space-x-4">
+        <span>App Insights: <strong class="text-emerald-400"><i class="fa-solid fa-circle-check"></i> Connected</strong></span>
+        <span>Budget: <strong class="text-cyan-400" id="status-budget">$42.50 / $150.00</strong></span>
+        <a href="/docs" target="_blank" class="text-blue-400 hover:text-blue-300 font-medium underline flex items-center gap-1">
+          <i class="fa-solid fa-code"></i> Swagger Docs
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Navigation Tabs -->
+  <nav class="max-w-7xl mx-auto px-4 mt-4 w-full">
+    <div class="flex border-b border-slate-800 overflow-x-auto space-x-2 text-sm font-medium">
+      <button onclick="switchTab('ai-studio')" id="tab-btn-ai-studio" class="px-4 py-3 flex items-center space-x-2 text-slate-400 hover:text-white nav-tab-active whitespace-nowrap">
+        <i class="fa-solid fa-brain text-cyan-400"></i>
+        <span>AI Model Serving Studio</span>
+      </button>
+      <button onclick="switchTab('architecture')" id="tab-btn-architecture" class="px-4 py-3 flex items-center space-x-2 text-slate-400 hover:text-white whitespace-nowrap">
+        <i class="fa-solid fa-network-wired text-blue-400"></i>
+        <span>Architecture & Services</span>
+      </button>
+      <button onclick="switchTab('tco-calculator')" id="tab-btn-tco-calculator" class="px-4 py-3 flex items-center space-x-2 text-slate-400 hover:text-white whitespace-nowrap">
+        <i class="fa-solid fa-calculator text-emerald-400"></i>
+        <span>Cloud Economics & TCO</span>
+      </button>
+      <button onclick="switchTab('governance')" id="tab-btn-governance" class="px-4 py-3 flex items-center space-x-2 text-slate-400 hover:text-white whitespace-nowrap">
+        <i class="fa-solid fa-shield-halved text-amber-400"></i>
+        <span>Governance & SLA</span>
+      </button>
+      <button onclick="switchTab('exam-prep')" id="tab-btn-exam-prep" class="px-4 py-3 flex items-center space-x-2 text-slate-400 hover:text-white whitespace-nowrap">
+        <i class="fa-solid fa-graduation-cap text-purple-400"></i>
+        <span>AZ-900 Exam & Error Log</span>
+      </button>
+      <button onclick="switchTab('telemetry')" id="tab-btn-telemetry" class="px-4 py-3 flex items-center space-x-2 text-slate-400 hover:text-white whitespace-nowrap">
+        <i class="fa-solid fa-chart-line text-rose-400"></i>
+        <span>Azure Monitor & Logs</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Tab Contents Container -->
+  <main class="max-w-7xl mx-auto px-4 py-6 w-full flex-grow">
+
+    <!-- TAB 1: AI MODEL SERVING STUDIO -->
+    <div id="tab-ai-studio" class="space-y-6">
+      <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div>
+          <h2 class="text-xl font-bold text-white flex items-center gap-2">
+            <i class="fa-solid fa-microchip text-cyan-400"></i>
+            Containerized AI Inference Microservice
+          </h2>
+          <p class="text-xs text-slate-400 mt-1">
+            Implements the industrial internship recommendation (Report §3.3) deploying an ML model-serving API on Azure App Service with live telemetry.
+          </p>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="px-2.5 py-1 text-xs rounded-full badge-success flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full bg-emerald-400"></span> Model: Scikit-Learn TF-IDF Dual-Head
+          </span>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Input & Form -->
+        <div class="lg:col-span-2 glass-card p-5 space-y-4">
+          <div class="flex justify-between items-center">
+            <h3 class="font-semibold text-slate-200 text-sm flex items-center gap-2">
+              <i class="fa-solid fa-terminal text-blue-400"></i> Real-Time Inference Input
+            </h3>
+            <div class="flex gap-2">
+              <button onclick="loadSampleText('positive')" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-2.5 py-1 rounded">Sample Positive</button>
+              <button onclick="loadSampleText('query')" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-2.5 py-1 rounded">Sample Query</button>
+              <button onclick="loadSampleText('incident')" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-2.5 py-1 rounded">Sample Incident</button>
+            </div>
+          </div>
+
+          <textarea id="ai-input-text" rows="4" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500 transition" placeholder="Enter customer feedback, cloud support ticket, or service review..."></textarea>
+
+          <div class="flex items-center justify-between">
+            <button onclick="runInference()" class="bg-blue-600 hover:bg-blue-500 text-white font-medium text-sm px-5 py-2.5 rounded-lg shadow-lg shadow-blue-600/30 transition flex items-center gap-2">
+              <i class="fa-solid fa-play"></i> Execute Inference
+            </button>
+            <button onclick="runBatchSimulation()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs px-4 py-2.5 rounded-lg transition flex items-center gap-2">
+              <i class="fa-solid fa-layer-group"></i> Simulate Batch (5 items)
+            </button>
+          </div>
+
+          <!-- Result Card -->
+          <div id="ai-result-card" class="hidden mt-4 pt-4 border-t border-slate-800 space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Inference Output</span>
+              <span id="ai-latency-badge" class="text-xs font-mono badge-azure px-2 py-0.5 rounded">Latency: 0.0 ms</span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="p-3 bg-slate-900 rounded-lg border border-slate-800">
+                <span class="text-xs text-slate-400 block mb-1">Detected Sentiment</span>
+                <div class="flex items-center justify-between">
+                  <span id="ai-sentiment-val" class="text-lg font-bold text-emerald-400">Positive</span>
+                  <span id="ai-sentiment-conf" class="text-xs font-semibold text-slate-300">95% Conf</span>
+                </div>
+              </div>
+
+              <div class="p-3 bg-slate-900 rounded-lg border border-slate-800">
+                <span class="text-xs text-slate-400 block mb-1">Category Classification</span>
+                <div class="flex items-center justify-between">
+                  <span id="ai-category-val" class="text-lg font-bold text-cyan-400">Reliability</span>
+                  <span id="ai-category-conf" class="text-xs font-semibold text-slate-300">92% Conf</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Probability breakdown bars -->
+            <div class="p-3 bg-slate-900 rounded-lg border border-slate-800 space-y-2">
+              <span class="text-xs text-slate-400 font-medium">Confidence Distribution:</span>
+              <div class="space-y-1.5 text-xs">
+                <div class="flex justify-between text-slate-300"><span>Positive</span><span id="prob-pos">0%</span></div>
+                <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                  <div id="bar-pos" class="bg-emerald-500 h-full w-0 transition-all duration-500"></div>
+                </div>
+                <div class="flex justify-between text-slate-300"><span>Neutral</span><span id="prob-neu">0%</span></div>
+                <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                  <div id="bar-neu" class="bg-blue-400 h-full w-0 transition-all duration-500"></div>
+                </div>
+                <div class="flex justify-between text-slate-300"><span>Negative</span><span id="prob-neg">0%</span></div>
+                <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                  <div id="bar-neg" class="bg-rose-500 h-full w-0 transition-all duration-500"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Architecture Specification Panel -->
+        <div class="glass-card p-5 space-y-4">
+          <h3 class="font-semibold text-slate-200 text-sm flex items-center gap-2">
+            <i class="fa-solid fa-cubes text-cyan-400"></i> Azure Deployment Topology
+          </h3>
+          <div class="space-y-3 text-xs">
+            <div class="p-3 rounded-lg bg-slate-900/80 border border-slate-800">
+              <strong class="text-blue-400 block font-semibold mb-1">Compute Tier (PaaS)</strong>
+              <p class="text-slate-300">Azure App Service Linux (B1/P1v3 SKU) running multi-stage Docker container with FastAPI runtime.</p>
+            </div>
+            <div class="p-3 rounded-lg bg-slate-900/80 border border-slate-800">
+              <strong class="text-emerald-400 block font-semibold mb-1">Storage Tier (GPv2)</strong>
+              <p class="text-slate-300">Azure Blob Storage Account (Hot tier for active weights, lifecycle rule to move to Archive after 90 days).</p>
+            </div>
+            <div class="p-3 rounded-lg bg-slate-900/80 border border-slate-800">
+              <strong class="text-purple-400 block font-semibold mb-1">Observability & Governance</strong>
+              <p class="text-slate-300">Azure Monitor, Log Analytics workspace, and Application Insights live request telemetry.</p>
+            </div>
+            <div class="p-3 rounded-lg bg-slate-900/80 border border-slate-800">
+              <strong class="text-amber-400 block font-semibold mb-1">Cost Management & Safeguards</strong>
+              <p class="text-slate-300">Monthly budget threshold with email action group + CanNotDelete resource lock.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 2: ARCHITECTURE & SERVICES -->
+    <div id="tab-architecture" class="hidden space-y-6">
+      <div>
+        <h2 class="text-xl font-bold text-white flex items-center gap-2">
+          <i class="fa-solid fa-network-wired text-blue-400"></i>
+          Azure Architecture & Core Services Explorer
+        </h2>
+        <p class="text-xs text-slate-400 mt-1">
+          Covers Domain 2 (35–40%) from the syllabus: Shared Responsibility Model, Global Infrastructure, Compute comparison, and Storage Redundancy.
+        </p>
+      </div>
+
+      <!-- Shared Responsibility Interactive Explorer -->
+      <div class="glass-card p-5 space-y-4">
+        <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-3">
+          <div>
+            <h3 class="font-bold text-white text-base flex items-center gap-2">
+              <i class="fa-solid fa-users-gear text-cyan-400"></i> Shared Responsibility Model (Fig. 1.1)
+            </h3>
+            <p class="text-xs text-slate-400">Select a cloud service model to examine the division of responsibility between Microsoft and the Customer.</p>
+          </div>
+          <div class="flex rounded-lg bg-slate-900 p-1 border border-slate-800 text-xs font-medium">
+            <button onclick="setSharedRespModel('onprem')" id="btn-sr-onprem" class="px-3 py-1.5 rounded text-slate-300">On-Prem</button>
+            <button onclick="setSharedRespModel('iaas')" id="btn-sr-iaas" class="px-3 py-1.5 rounded text-slate-300">IaaS (VMs)</button>
+            <button onclick="setSharedRespModel('paas')" id="btn-sr-paas" class="px-3 py-1.5 rounded bg-blue-600 text-white font-bold">PaaS (App Service)</button>
+            <button onclick="setSharedRespModel('saas')" id="btn-sr-saas" class="px-3 py-1.5 rounded text-slate-300">SaaS (M365)</button>
+          </div>
+        </div>
+
+        <!-- Responsibility Matrix Visualizer -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4" id="sr-matrix-container">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+      <!-- Storage Redundancy & Redundancy Calculator -->
+      <div class="glass-card p-5 space-y-4">
+        <h3 class="font-bold text-white text-base flex items-center gap-2">
+          <i class="fa-solid fa-database text-emerald-400"></i> Azure Storage Redundancy & Lifecycle Simulator (Table 2.2)
+        </h3>
+        <p class="text-xs text-slate-400">Calculate costs and durability across LRS, ZRS, GRS, and GZRS with Hot, Cool, Cold, and Archive tiers.</p>
+
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Data Volume (GB)</label>
+            <input type="number" id="storage-sim-gb" value="1000" min="1" class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-sm text-white">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Redundancy Option</label>
+            <select id="storage-sim-red" class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-sm text-white">
+              <option value="LRS">LRS (Locally Redundant - 11 Nines)</option>
+              <option value="ZRS" selected>ZRS (Zone Redundant - 12 Nines)</option>
+              <option value="GRS">GRS (Geo Redundant - 16 Nines)</option>
+              <option value="GZRS">GZRS (Geo-Zone Redundant - 16 Nines)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Access Tier</label>
+            <select id="storage-sim-tier" class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-sm text-white">
+              <option value="Hot" selected>Hot (Active data, low access cost)</option>
+              <option value="Cool">Cool (Infrequent, min 30 days)</option>
+              <option value="Cold">Cold (Rare, min 90 days)</option>
+              <option value="Archive">Archive (Long-term backup, 1-15 hr rehydrate)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Monthly Retrieval (GB)</label>
+            <input type="number" id="storage-sim-retrieval" value="200" min="0" class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-sm text-white">
+          </div>
+        </div>
+
+        <button onclick="calculateStorageCost()" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold px-4 py-2 rounded shadow transition">
+          Calculate Storage SLA & Costs
+        </button>
+
+        <div id="storage-sim-output" class="hidden grid grid-cols-1 md:grid-cols-3 gap-4 pt-4 border-t border-slate-800">
+          <div class="p-3 bg-slate-900 rounded-lg">
+            <span class="text-xs text-slate-400 block">Total Monthly Cost</span>
+            <span class="text-xl font-bold text-emerald-400" id="sim-cost-val">$0.00</span>
+            <span class="text-xs text-slate-500 block" id="sim-cost-breakdown">Storage: $0 | Retrieval: $0</span>
+          </div>
+          <div class="p-3 bg-slate-900 rounded-lg">
+            <span class="text-xs text-slate-400 block">Durability Guarantee</span>
+            <span class="text-sm font-bold text-cyan-400" id="sim-durability-val">12 Nines</span>
+            <span class="text-xs text-slate-400 block mt-1" id="sim-scope-val">Replicated across 3 Availability Zones</span>
+          </div>
+          <div class="p-3 bg-slate-900 rounded-lg">
+            <span class="text-xs text-slate-400 block">Rehydration Latency</span>
+            <span class="text-sm font-bold text-amber-400" id="sim-rehydrate-val">Instant</span>
+            <span class="text-xs text-slate-400 block mt-1" id="sim-usecase-val">Active application workloads</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 3: CLOUD ECONOMICS & TCO -->
+    <div id="tab-tco-calculator" class="hidden space-y-6">
+      <div>
+        <h2 class="text-xl font-bold text-white flex items-center gap-2">
+          <i class="fa-solid fa-calculator text-emerald-400"></i>
+          Total Cost of Ownership (TCO) & CapEx vs OpEx Engine
+        </h2>
+        <p class="text-xs text-slate-400 mt-1">
+          Directly simulates the pricing mechanics from Week 1 (CapEx vs OpEx) and Week 4 (Pricing Calculator, TCO, Spot, Reservations, Azure Hybrid Benefit).
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Configuration Controls -->
+        <div class="glass-card p-5 space-y-4">
+          <h3 class="font-bold text-slate-200 text-sm flex items-center gap-2">
+            <i class="fa-solid fa-sliders text-blue-400"></i> Infrastructure Parameters
+          </h3>
+
+          <div>
+            <div class="flex justify-between text-xs mb-1">
+              <span class="text-slate-300">Number of On-Prem Servers</span>
+              <span id="lbl-tco-servers" class="font-bold text-cyan-400">10 servers</span>
+            </div>
+            <input type="range" id="tco-servers" min="2" max="100" value="10" oninput="updateTCOSliders()" class="w-full accent-blue-500">
+          </div>
+
+          <div>
+            <div class="flex justify-between text-xs mb-1">
+              <span class="text-slate-300">vCPUs per Server</span>
+              <span id="lbl-tco-cores" class="font-bold text-cyan-400">8 cores</span>
+            </div>
+            <input type="range" id="tco-cores" min="2" max="64" step="2" value="8" oninput="updateTCOSliders()" class="w-full accent-blue-500">
+          </div>
+
+          <div>
+            <div class="flex justify-between text-xs mb-1">
+              <span class="text-slate-300">RAM per Server (GB)</span>
+              <span id="lbl-tco-ram" class="font-bold text-cyan-400">32 GB</span>
+            </div>
+            <input type="range" id="tco-ram" min="8" max="256" step="8" value="32" oninput="updateTCOSliders()" class="w-full accent-blue-500">
+          </div>
+
+          <div>
+            <div class="flex justify-between text-xs mb-1">
+              <span class="text-slate-300">Storage Capacity (TB)</span>
+              <span id="lbl-tco-storage" class="font-bold text-cyan-400">10 TB</span>
+            </div>
+            <input type="range" id="tco-storage" min="1" max="100" value="10" oninput="updateTCOSliders()" class="w-full accent-blue-500">
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Time Horizon</label>
+            <select id="tco-years" class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-sm text-white">
+              <option value="1">1 Year Analysis</option>
+              <option value="3" selected>3 Year Analysis (Standard TCO)</option>
+              <option value="5">5 Year Lifecycle</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Azure Purchase Model</label>
+            <select id="tco-model" class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-sm text-white">
+              <option value="pay_as_you_go">Pay-As-You-Go (Full flexibility, 0 commitment)</option>
+              <option value="reserved_1yr">1-Year Reserved Instance (~38% discount)</option>
+              <option value="reserved_3yr" selected>3-Year Reserved Instance (~62% discount)</option>
+              <option value="spot">Spot Virtual Machines (Up to ~85% discount for batch AI)</option>
+            </select>
+          </div>
+
+          <div class="flex items-center space-x-2 pt-2">
+            <input type="checkbox" id="tco-ahb" checked class="accent-blue-500 rounded">
+            <label for="tco-ahb" class="text-xs text-slate-300">Apply <strong>Azure Hybrid Benefit</strong> (Bring Windows/SQL licenses)</label>
+          </div>
+
+          <button onclick="calculateTCO()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-sm py-2.5 rounded-lg shadow-lg shadow-emerald-600/30 transition flex items-center justify-center gap-2">
+            <i class="fa-solid fa-calculator"></i> Run TCO Analysis
+          </button>
+        </div>
+
+        <!-- TCO Results & Comparison -->
+        <div class="lg:col-span-2 glass-card p-5 space-y-4">
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div class="p-4 bg-slate-900/90 rounded-lg border border-slate-800">
+              <span class="text-xs text-slate-400 block mb-1">On-Premises Total Cost</span>
+              <span id="tco-res-onprem" class="text-2xl font-bold text-rose-400">$0</span>
+              <span class="text-xs text-slate-500 block mt-1">CapEx + Facilities + Admin</span>
+            </div>
+            <div class="p-4 bg-slate-900/90 rounded-lg border border-slate-800">
+              <span class="text-xs text-slate-400 block mb-1">Azure Cloud Total Cost</span>
+              <span id="tco-res-azure" class="text-2xl font-bold text-cyan-400">$0</span>
+              <span class="text-xs text-slate-500 block mt-1">100% OpEx (Billed on usage)</span>
+            </div>
+            <div class="p-4 bg-slate-900/90 rounded-lg border border-emerald-500/30 bg-emerald-950/20">
+              <span class="text-xs text-emerald-400 font-semibold block mb-1">Total Estimated Savings</span>
+              <span id="tco-res-savings" class="text-2xl font-bold text-emerald-400">$0</span>
+              <span id="tco-res-pct" class="text-xs font-bold text-emerald-300 block mt-1">0% Reduction</span>
+            </div>
+          </div>
+
+          <!-- Summary banner -->
+          <div id="tco-summary-text" class="p-3 bg-blue-950/30 border border-blue-500/30 rounded-lg text-xs text-blue-200">
+            Click 'Run TCO Analysis' to project the financial transition from Capital Expenditure to Operational Expenditure.
+          </div>
+
+          <!-- Breakdown comparison -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+            <div class="p-3 bg-slate-900 rounded-lg space-y-2">
+              <span class="font-bold text-rose-400 flex items-center gap-1.5">
+                <i class="fa-solid fa-server"></i> On-Premises Cost Drivers
+              </span>
+              <ul id="tco-list-onprem" class="space-y-1.5 text-slate-300">
+                <!-- Dynamically populated -->
+              </ul>
+            </div>
+            <div class="p-3 bg-slate-900 rounded-lg space-y-2">
+              <span class="font-bold text-cyan-400 flex items-center gap-1.5">
+                <i class="fa-solid fa-cloud"></i> Azure Cloud Efficiency
+              </span>
+              <ul id="tco-list-azure" class="space-y-1.5 text-slate-300">
+                <!-- Dynamically populated -->
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 4: GOVERNANCE & SLA -->
+    <div id="tab-governance" class="hidden space-y-6">
+      <div>
+        <h2 class="text-xl font-bold text-white flex items-center gap-2">
+          <i class="fa-solid fa-shield-halved text-amber-400"></i>
+          Azure Governance, Policy & Composite SLA Engine
+        </h2>
+        <p class="text-xs text-slate-400 mt-1">
+          Simulates Azure Policy compliance checks, CAF naming conventions, resource locks, and multi-tier Composite SLA calculations.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Azure Policy Validator -->
+        <div class="glass-card p-5 space-y-4">
+          <div class="flex justify-between items-center">
+            <h3 class="font-bold text-slate-200 text-sm flex items-center gap-2">
+              <i class="fa-solid fa-file-shield text-amber-400"></i> Azure Policy & Tagging Evaluator
+            </h3>
+            <span class="badge-azure px-2 py-0.5 rounded text-xs">CAF Compliant</span>
+          </div>
+
+          <div class="space-y-3 text-xs">
+            <div>
+              <label class="block font-semibold text-slate-300 mb-1">Resource Name</label>
+              <input type="text" id="gov-res-name" value="app-cloudhub-prod-01" class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-white">
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block font-semibold text-slate-300 mb-1">Resource Type</label>
+                <select id="gov-res-type" class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-white">
+                  <option value="appservice" selected>App Service (app-)</option>
+                  <option value="resourcegroup">Resource Group (rg-)</option>
+                  <option value="storageaccount">Storage Account (st...)</option>
+                  <option value="virtualnetwork">Virtual Network (vnet-)</option>
+                </select>
+              </div>
+              <div>
+                <label class="block font-semibold text-slate-300 mb-1">Target Azure Region</label>
+                <select id="gov-res-region" class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-white">
+                  <option value="centralindia" selected>Central India (Allowed)</option>
+                  <option value="eastus">East US (Allowed)</option>
+                  <option value="westeurope">West Europe (Allowed)</option>
+                  <option value="brazilsouth">Brazil South (Disallowed by Policy)</option>
+                  <option value="australiaeast">Australia East (Disallowed by Policy)</option>
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <label class="block font-semibold text-slate-300 mb-1">Resource Lock</label>
+              <select id="gov-res-lock" class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-white">
+                <option value="CanNotDelete" selected>CanNotDelete (Allows edit, prevents accidental deletion)</option>
+                <option value="ReadOnly">ReadOnly (Prevents all edits and deletions)</option>
+                <option value="None">None (Unprotected)</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block font-semibold text-slate-300 mb-1">Tags (JSON)</label>
+              <textarea id="gov-res-tags" rows="3" class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-white font-mono text-xs">{
+  "Environment": "Production",
+  "Owner": "Dev Sehgal",
+  "Project": "AZ-900 AIML Workload",
+  "CostCenter": "CC-70484"
+}</textarea>
+            </div>
+
+            <button onclick="evaluateGovernance()" class="w-full bg-amber-600 hover:bg-amber-500 text-white font-semibold py-2 rounded shadow transition">
+              Evaluate Against Azure Policies
+            </button>
+          </div>
+
+          <!-- Evaluation output -->
+          <div id="gov-eval-output" class="hidden p-3 bg-slate-900 rounded-lg border border-slate-800 space-y-2 text-xs">
+            <div class="flex justify-between items-center">
+              <span class="font-semibold text-slate-200">Compliance Result</span>
+              <span id="gov-badge-status" class="badge-success px-2 py-0.5 rounded font-bold">100% Compliant</span>
+            </div>
+            <div id="gov-rules-list" class="space-y-1 pt-1">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Composite SLA Calculator -->
+        <div class="glass-card p-5 space-y-4">
+          <div class="flex justify-between items-center">
+            <h3 class="font-bold text-slate-200 text-sm flex items-center gap-2">
+              <i class="fa-solid fa-clock-rotate-left text-cyan-400"></i> Azure Composite SLA Calculator
+            </h3>
+            <span class="badge-azure px-2 py-0.5 rounded text-xs">Multi-Tier SLA</span>
+          </div>
+
+          <div class="space-y-3 text-xs">
+            <p class="text-slate-400">Combining independent cloud services in series reduces total availability: <code class="text-cyan-300">SLA_total = SLA_1 × SLA_2 × ...</code></p>
+
+            <div class="p-3 bg-slate-900 rounded-lg space-y-2">
+              <span class="font-semibold text-slate-300">Selected Architecture Components:</span>
+              <div class="flex justify-between items-center text-slate-200">
+                <span>Azure App Service (Standard/Premium)</span>
+                <span class="font-mono text-cyan-400">99.95%</span>
+              </div>
+              <div class="flex justify-between items-center text-slate-200">
+                <span>Azure SQL Database (General Purpose)</span>
+                <span class="font-mono text-cyan-400">99.99%</span>
+              </div>
+              <div class="flex justify-between items-center text-slate-200">
+                <span>Azure Blob Storage Account (Hot)</span>
+                <span class="font-mono text-cyan-400">99.90%</span>
+              </div>
+            </div>
+
+            <div>
+              <label class="block font-semibold text-slate-300 mb-1">Deployment Topology / Resilience Tier</label>
+              <select id="sla-deploy-mode" onchange="runSlaCalculation()" class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-white">
+                <option value="single_instance">Single Region / Default Datacenter</option>
+                <option value="availability_zones" selected>3 Availability Zones in Primary Region (99.99% boost)</option>
+                <option value="multi_region_paired">Multi-Region Paired with Traffic Manager (99.999% failover)</option>
+              </select>
+            </div>
+
+            <!-- SLA Results -->
+            <div class="grid grid-cols-2 gap-3 pt-2">
+              <div class="p-3 bg-slate-900 rounded-lg text-center">
+                <span class="text-slate-400 block text-xs">Composite SLA</span>
+                <span id="sla-val" class="text-xl font-bold text-cyan-400">99.99%</span>
+              </div>
+              <div class="p-3 bg-slate-900 rounded-lg text-center">
+                <span class="text-slate-400 block text-xs">Max Yearly Downtime</span>
+                <span id="sla-downtime-year" class="text-xl font-bold text-amber-400">52.5 mins</span>
+              </div>
+            </div>
+
+            <div id="sla-recommendations" class="p-3 bg-slate-900 rounded-lg border border-slate-800 space-y-1 text-slate-300 text-xs">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 5: EXAM PREP & ERROR LOG -->
+    <div id="tab-exam-prep" class="hidden space-y-6">
+      <div class="flex flex-col md:flex-row justify-between md:items-center gap-4">
+        <div>
+          <h2 class="text-xl font-bold text-white flex items-center gap-2">
+            <i class="fa-solid fa-graduation-cap text-purple-400"></i>
+            AZ-900 Exam Simulator & Error Log Revision
+          </h2>
+          <p class="text-xs text-slate-400 mt-1">
+            20 timed mock questions mapped to the 3 domains. Features Dev Sehgal's actual score benchmark (971/1000) and curated error log.
+          </p>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="px-3 py-1 rounded badge-azure text-xs font-bold">Passing Bar: 700 / 1000</span>
+          <span class="px-3 py-1 rounded badge-success text-xs font-bold">Dev Sehgal's Score: 971</span>
+        </div>
+      </div>
+
+      <!-- Error Log Collapsible Section -->
+      <div class="glass-card p-5 space-y-3">
+        <div class="flex justify-between items-center cursor-pointer" onclick="toggleErrorLog()">
+          <h3 class="font-bold text-slate-200 text-sm flex items-center gap-2">
+            <i class="fa-solid fa-book-bookmark text-rose-400"></i>
+            Curated Error Log: Key Conceptual Distinctions (Report §2.5)
+          </h3>
+          <span id="error-log-toggle-icon" class="text-slate-400 text-xs"><i class="fa-solid fa-chevron-down"></i> Click to expand</span>
+        </div>
+        <div id="error-log-container" class="hidden pt-3 border-t border-slate-800 grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+      <!-- Interactive Exam Simulator -->
+      <div class="glass-card p-5 space-y-4">
+        <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+          <div class="flex items-center space-x-2">
+            <span class="font-bold text-white text-sm">Full Mock Examination</span>
+            <span id="quiz-progress" class="text-xs text-slate-400">Question 1 of 20</span>
+          </div>
+          <button onclick="resetQuiz()" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded">
+            <i class="fa-solid fa-rotate-right"></i> Reset Test
+          </button>
+        </div>
+
+        <div id="quiz-question-container" class="space-y-4">
+          <!-- Populated by JS -->
+        </div>
+
+        <!-- Quiz Result Banner (Hidden initially) -->
+        <div id="quiz-result-banner" class="hidden p-5 rounded-xl border space-y-4">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 6: TELEMETRY & LOGS -->
+    <div id="tab-telemetry" class="hidden space-y-6">
+      <div class="flex justify-between items-center">
+        <div>
+          <h2 class="text-xl font-bold text-white flex items-center gap-2">
+            <i class="fa-solid fa-chart-line text-rose-400"></i>
+            Azure Monitor & Application Insights Telemetry
+          </h2>
+          <p class="text-xs text-slate-400 mt-1">
+            Real-time observability sink tracking microservice invocations, latency percentiles, and cost alert threshold triggers.
+          </p>
+        </div>
+        <div class="flex gap-2">
+          <button onclick="simulateSpendSpike()" class="bg-amber-600 hover:bg-amber-500 text-white text-xs px-3 py-1.5 rounded shadow">
+            <i class="fa-solid fa-bell"></i> Trigger Spend Spike (80% Alert)
+          </button>
+          <button onclick="resetSpend()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs px-3 py-1.5 rounded">
+            Reset Budget
+          </button>
+        </div>
+      </div>
+
+      <!-- Telemetry metric cards -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div class="glass-card p-4">
+          <span class="text-xs text-slate-400 block mb-1">Total Requests Served</span>
+          <span id="telem-req-count" class="text-2xl font-bold text-white">0</span>
+          <span class="text-xs text-emerald-400 block mt-1">Live Ingestion</span>
+        </div>
+        <div class="glass-card p-4">
+          <span class="text-xs text-slate-400 block mb-1">Average Latency</span>
+          <span id="telem-avg-lat" class="text-2xl font-bold text-cyan-400">0.0 ms</span>
+          <span class="text-xs text-slate-500 block mt-1">Target: &lt; 50ms</span>
+        </div>
+        <div class="glass-card p-4">
+          <span class="text-xs text-slate-400 block mb-1">Uptime</span>
+          <span id="telem-uptime" class="text-2xl font-bold text-emerald-400">0s</span>
+          <span class="text-xs text-slate-500 block mt-1">99.99% Availability</span>
+        </div>
+        <div class="glass-card p-4">
+          <span class="text-xs text-slate-400 block mb-1">Budget Burn Rate</span>
+          <span id="telem-budget-pct" class="text-2xl font-bold text-blue-400">28.3%</span>
+          <span id="telem-budget-status" class="text-xs text-slate-400 block mt-1">$42.50 of $150.00</span>
+        </div>
+      </div>
+
+      <!-- Live Log Stream -->
+      <div class="glass-card p-5 space-y-3">
+        <div class="flex justify-between items-center">
+          <h3 class="font-bold text-slate-200 text-sm flex items-center gap-2">
+            <i class="fa-solid fa-stream text-rose-400"></i> Application Insights Structured Trace Stream
+          </h3>
+          <span class="text-xs text-slate-500">Auto-refreshing every 3s</span>
+        </div>
+        <div id="live-log-stream" class="log-terminal p-4 rounded-lg h-72 overflow-y-auto space-y-1.5 text-slate-300">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="border-t border-slate-800 bg-slate-900/60 py-4 px-4 mt-auto">
+    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-2 text-xs text-slate-500">
+      <div>
+        <span>AzureCloudHub © 2026 • Developed for Industrial Internship Portfolio</span>
+        <span class="ml-2 font-mono text-slate-400">Candidate: Dev Sehgal (UID: 24BAI70484)</span>
+      </div>
+      <div>
+        <span>Mapped to Microsoft AZ-900 Curriculum • Chandigarh University</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/static/js/app.js"></script>
+</body>
+</html>

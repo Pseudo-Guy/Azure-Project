@@ -1,0 +1,168 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "AzureCloudHub IaC Suite",
+      "version": "1.0.0",
+      "templateHash": "AZ900-24BAI70484"
+    },
+    "description": "Provisions AI Model-Serving Architecture with App Service, Storage Account (ZRS), Log Analytics, and Application Insights"
+  },
+  "parameters": {
+    "location": {
+      "type": "string",
+      "defaultValue": "centralindia",
+      "metadata": {
+        "description": "Primary deployment location"
+      }
+    },
+    "environment": {
+      "type": "string",
+      "defaultValue": "prod",
+      "allowedValues": [
+        "dev",
+        "test",
+        "prod"
+      ]
+    },
+    "projectName": {
+      "type": "string",
+      "defaultValue": "cloudhub"
+    },
+    "ownerName": {
+      "type": "string",
+      "defaultValue": "Dev Sehgal"
+    },
+    "costCenter": {
+      "type": "string",
+      "defaultValue": "CC-70484"
+    }
+  },
+  "variables": {
+    "uniqueSuffix": "[uniqueString(resourceGroup().id)]",
+    "storageAccountName": "[format('st{0}{1}', parameters('projectName'), variables('uniqueSuffix'))]",
+    "appServicePlanName": "[format('asp-{0}-{1}', parameters('projectName'), parameters('environment'))]",
+    "appServiceName": "[format('app-{0}-{1}-{2}', parameters('projectName'), parameters('environment'), variables('uniqueSuffix'))]",
+    "logAnalyticsName": "[format('log-{0}-{1}', parameters('projectName'), parameters('environment'))]",
+    "appInsightsName": "[format('appi-{0}-{1}', parameters('projectName'), parameters('environment'))]",
+    "standardTags": {
+      "Environment": "[parameters('environment')]",
+      "Owner": "[parameters('ownerName')]",
+      "Project": "AzureCloudHub-AIML",
+      "CostCenter": "[parameters('costCenter')]",
+      "ManagedBy": "ARM-Template",
+      "Certification": "AZ-900"
+    }
+  },
+  "resources": [
+    {
+      "type": "Microsoft.OperationalInsights/workspaces",
+      "apiVersion": "2023-09-01",
+      "name": "[variables('logAnalyticsName')]",
+      "location": "[parameters('location')]",
+      "tags": "[variables('standardTags')]",
+      "properties": {
+        "sku": {
+          "name": "PerGB2018"
+        },
+        "retentionInDays": 30
+      }
+    },
+    {
+      "type": "Microsoft.Insights/components",
+      "apiVersion": "2020-02-02",
+      "name": "[variables('appInsightsName')]",
+      "location": "[parameters('location')]",
+      "tags": "[variables('standardTags')]",
+      "kind": "web",
+      "dependsOn": [
+        "[resourceId('Microsoft.OperationalInsights/workspaces', variables('logAnalyticsName'))]"
+      ],
+      "properties": {
+        "Application_Type": "web",
+        "WorkspaceResourceId": "[resourceId('Microsoft.OperationalInsights/workspaces', variables('logAnalyticsName'))]",
+        "IngestionMode": "LogAnalytics"
+      }
+    },
+    {
+      "type": "Microsoft.Storage/storageAccounts",
+      "apiVersion": "2023-01-01",
+      "name": "[variables('storageAccountName')]",
+      "location": "[parameters('location')]",
+      "tags": "[variables('standardTags')]",
+      "sku": {
+        "name": "Standard_ZRS"
+      },
+      "kind": "StorageV2",
+      "properties": {
+        "accessTier": "Hot",
+        "supportsHttpsTrafficOnly": true,
+        "minimumTlsVersion": "TLS1_2",
+        "allowBlobPublicAccess": false
+      }
+    },
+    {
+      "type": "Microsoft.Web/serverfarms",
+      "apiVersion": "2023-01-01",
+      "name": "[variables('appServicePlanName')]",
+      "location": "[parameters('location')]",
+      "tags": "[variables('standardTags')]",
+      "kind": "linux",
+      "sku": {
+        "name": "B1",
+        "tier": "Basic"
+      },
+      "properties": {
+        "reserved": true
+      }
+    },
+    {
+      "type": "Microsoft.Web/sites",
+      "apiVersion": "2023-01-01",
+      "name": "[variables('appServiceName')]",
+      "location": "[parameters('location')]",
+      "tags": "[variables('standardTags')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/serverfarms', variables('appServicePlanName'))]",
+        "[resourceId('Microsoft.Insights/components', variables('appInsightsName'))]",
+        "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
+      ],
+      "properties": {
+        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('appServicePlanName'))]",
+        "httpsOnly": true,
+        "siteConfig": {
+          "linuxFxVersion": "DOCKER|ghcr.io/arighnasadhu/azurecloudhub:latest",
+          "appSettings": [
+            {
+              "name": "APPLICATIONINSIGHTS_CONNECTION_STRING",
+              "value": "[reference(resourceId('Microsoft.Insights/components', variables('appInsightsName')), '2020-02-02').ConnectionString]"
+            },
+            {
+              "name": "AZURE_REGION",
+              "value": "[parameters('location')]"
+            },
+            {
+              "name": "STORAGE_ACCOUNT_NAME",
+              "value": "[variables('storageAccountName')]"
+            },
+            {
+              "name": "WEBSITES_PORT",
+              "value": "8000"
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "outputs": {
+    "appServiceUrl": {
+      "type": "string",
+      "value": "[format('https://{0}', reference(resourceId('Microsoft.Web/sites', variables('appServiceName'))).defaultHostName)]"
+    },
+    "storageAccount": {
+      "type": "string",
+      "value": "[variables('storageAccountName')]"
+    }
+  }
+}
